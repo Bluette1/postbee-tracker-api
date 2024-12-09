@@ -1,0 +1,27 @@
+[flake8]
+max-line-length = 88
+extend-ignore = 
+    # E203: Whitespace before ':' (handled by black)
+    E203,
+    # W503: Line break occurred before a binary operator (handled by black)
+    W503,
+    # E402: Module level import not at top of file
+    E402,
+    # F403: 'from module import *' used
+    F403,
+    # F405: Name may be undefined, or defined from star imports
+    F405
+exclude =
+    .git,
+    __pycache__,
+    build,
+    dist,
+    *.egg-info,
+    venv,
+    .env,
+    migrations,
+    tests
+per-file-ignores =
+    # F401: Module imported but unused
+    __init__.py: F401
+max-complexity = 10
