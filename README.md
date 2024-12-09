@@ -84,6 +84,8 @@ All API endpoints require user authentication. Ensure to include a valid token i
 
 Contributions are welcome! Please fork the repository and create a new feature branch. Submit a pull request with your changes.
 
+### [User Stories](https://www.notion.so/PostBee-API-User-Stories-149e6a4d98f280849601e17fcdfd7efc?pvs=4)
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
