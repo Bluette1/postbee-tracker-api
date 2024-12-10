@@ -80,6 +80,40 @@ All API endpoints require user authentication. Ensure to include a valid token i
    flask run
    ```
 
+## CI/CD Pipeline
+
+This project uses GitHub Actions for continuous integration and continuous deployment. The pipeline includes:
+
+### Automated Checks
+- Code formatting (Black)
+- Import sorting (isort)
+- Linting (flake8)
+- Unit tests (pytest)
+- Code coverage reporting
+
+### Workflow Triggers
+The CI pipeline runs on:
+- Push to main and develop branches
+- Pull requests to main and develop branches
+
+### Local Development
+To run the same checks locally before committing:
+
+```bash
+# Install development dependencies
+pip install black flake8 pytest pytest-cov isort
+
+# Format code
+black .
+isort .
+
+# Run linting
+flake8
+
+# Run tests with coverage
+pytest --cov=.
+```
+
 ## Contributing
 
 Contributions are welcome! Please fork the repository and create a new feature branch. Submit a pull request with your changes.
