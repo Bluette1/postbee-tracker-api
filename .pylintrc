@@ -3,7 +3,7 @@
 ignore=
     .git,
     __pycache__,
-    postbee-tracker-env,
+    postbee-tracker-api-env,
     venv,
     .env,
     migrations,

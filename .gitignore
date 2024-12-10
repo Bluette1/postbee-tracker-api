@@ -22,7 +22,7 @@ wheels/
 MANIFEST
 
 # Virtual Environment
-postbee-tracker-env/
+postbee-tracker-api-env/
 venv/
 env/
 ENV/
