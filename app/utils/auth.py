@@ -1,8 +1,9 @@
 from functools import wraps
 
 import jwt
-from app.config import JWT_SECRET_KEY
 from flask import jsonify, request
+
+from app.config import JWT_SECRET_KEY
 
 
 def validate_token(f):

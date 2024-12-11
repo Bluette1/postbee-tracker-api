@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+
 from app.utils.auth import validate_token
 
 tracking_routes = Blueprint("tracking_routes", __name__)
