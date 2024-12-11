@@ -3,6 +3,7 @@ from flask_cors import CORS
 from flask_mongoengine import MongoEngine
 
 from .config import get_config
+from .routes import init_app
 from .routes.tracking import tracking_routes
 
 db = MongoEngine()
@@ -16,8 +17,6 @@ def create_app(config_name="development"):
     db.init_app(app)
 
     CORS(app)
-
-    from .routes import init_app
 
     init_app(app)
 

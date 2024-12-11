@@ -1,34 +1,40 @@
 from functools import wraps
 
-import jwt
+import requests
 from flask import jsonify, request
 
-from app.config import JWT_SECRET_KEY
+from app.config import get_config
+
+config = get_config()
 
 
-def validate_token(f):
+def validate_token(token):
+    response = requests.post(
+        f"{config.RAILS_API_URL}/validate_token", json={"access_token": token}
+    )
+
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return None
+
+
+def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = None
-
-        if "Authorization" in request.headers:
-            auth_header = request.headers["Authorization"]
-            try:
-                token = auth_header.split(" ")[1]
-            except IndexError:
-                return jsonify({"message": "Invalid token format"}), 401
+        token = request.headers.get("Authorization")
 
         if not token:
             return jsonify({"message": "Token is missing"}), 401
 
-        try:
-            payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=["HS256"])
-            request.user = payload
-        except jwt.ExpiredSignatureError:
-            return jsonify({"message": "Token has expired"}), 401
-        except jwt.InvalidTokenError:
+        token = token.split(" ")[1]  # Assuming "Bearer <token>"
+
+        user_info = validate_token(token)
+
+        if user_info is None:
             return jsonify({"message": "Invalid token"}), 401
 
+        request.user = user_info
         return f(*args, **kwargs)
 
     return decorated
