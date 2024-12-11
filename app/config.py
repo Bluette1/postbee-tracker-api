@@ -14,7 +14,7 @@ class Config:
     MONGODB_SETTINGS = {
         "db": os.getenv("MONGODB_NAME", "postbee_tracker"),  # Database name
         "host": os.getenv("MONGODB_HOST", "localhost"),  # Host
-        "port": int(os.getenv("MONGODB_PORT", '27017')),  # Port
+        "port": int(os.getenv("MONGODB_PORT", "27017")),  # Port
         "username": os.getenv("MONGODB_USER"),  # Optional: Username for auth
         "password": os.getenv("MONGODB_PASS"),  # Optional: Password for auth
     }
