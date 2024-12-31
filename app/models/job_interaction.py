@@ -1,11 +1,9 @@
-from flask_pymongo import PyMongo
+from flask_pymongo import PyMongo, current_app
 from datetime import datetime
 from bson.objectid import ObjectId
-from app import mongo  
-import logging
+from app import mongo
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = current_app.logger
 
 class JobInteraction:
     def __init__(
@@ -16,7 +14,7 @@ class JobInteraction:
         is_saved=False,
         follow_up_data=None,
         has_follow_up=False,
-        id=None,  
+        id=None,
     ):
         self.id = id or ObjectId()
         self.user_id = user_id
@@ -36,7 +34,7 @@ class JobInteraction:
             "follow_up_data": self.follow_up_data,
             "has_follow_up": self.has_follow_up,
             "updated_at": self.updated_at.isoformat(),
-            "_id": self.id,  # Include _id in the dictionary
+            "_id": self.id,
         }
 
     @classmethod
@@ -49,10 +47,11 @@ class JobInteraction:
             is_saved=data.get("is_saved", False),
             follow_up_data=data.get("follow_up_data"),
             has_follow_up=data.get("has_follow_up", False),
-            id=data.get("_id"), 
+            id=data.get("_id"),
         )
 
     def save(self):
+        """Save the JobInteraction to the database."""
         try:
             mongo.db.job_interactions.insert_one(self.to_dict())
             logger.info("JobInteraction saved successfully for user_id: %s, job_id: %s", self.user_id, self.job_id)
@@ -61,6 +60,7 @@ class JobInteraction:
             raise
 
     def update(self):
+        """Update the JobInteraction in the database."""
         try:
             mongo.db.job_interactions.update_one(
                 {"user_id": self.user_id, "job_id": self.job_id},
@@ -73,6 +73,7 @@ class JobInteraction:
 
     @classmethod
     def find(cls, user_id, job_id):
+        """Find a JobInteraction by user_id and job_id."""
         try:
             interaction_data = mongo.db.job_interactions.find_one(
                 {"user_id": user_id, "job_id": job_id}
