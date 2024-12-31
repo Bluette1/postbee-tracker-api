@@ -13,6 +13,7 @@ flake8==7.1.1
 Flask==2.2.5
 Flask-Cors==4.0.0
 flask-mongoengine==1.0.0
+Flask-PyMongo==2.3.0
 Flask-WTF==1.2.2
 idna==3.10
 iniconfig==2.0.0

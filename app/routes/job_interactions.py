@@ -2,9 +2,14 @@ from datetime import datetime
 from flask import Blueprint, jsonify, request
 from app.utils.auth import token_required
 from app.models.job_interaction import JobInteraction
+import requests
+from app.config import get_config
+
+config = get_config()
 
 job_interaction_routes = Blueprint("job_interaction_routes", __name__)
 
+RAILS_API_URL = config.RAILS_API_URL
 
 @job_interaction_routes.route("/<string:job_id>/pin", methods=["POST"])
 @token_required
@@ -96,20 +101,70 @@ def get_follow_up(job_id: str) -> tuple:
     return jsonify(interaction.follow_up_data), 200
 
 
-@job_interaction_routes.route("/<string:job_id>/view", methods=["POST"])
+@job_interaction_routes.route('/<string:job_id>/view', methods=['POST'])
+def track_view(job_id):
+    try:
+        response = requests.post(f"{RAILS_API_URL}/job_posts/{job_id}/increment_view_count")
+        response.raise_for_status()
+        data = response.json()
+        view_count = data.get('view_count')
+        last_viewed = data.get('last_viewed') 
+    except requests.exceptions.RequestException as e:
+        print("Error updating view count in Rails API:", e)
+        return {"error": "Failed to update view count"}, 500
+
+    return {
+        "message": "View tracked successfully",
+        "view_count": view_count,
+        "last_viewed": last_viewed
+    }, 200
+
+@job_interaction_routes.route('/<string:job_id>/interaction', methods=['POST'])
 @token_required
-def track_view(job_id: str) -> tuple:
+def track_interaction(job_id):
+    user_id = request.user.get("user_id")
+
+    interaction = JobInteraction.find(user_id, job_id)
+    
+    if not interaction:
+        new_interaction = JobInteraction(user_id=user_id, job_id=job_id)
+        new_interaction.save()
+
+    return {
+        "message": "Interaction tracked successfully"
+    }, 200
+
+@job_interaction_routes.route('/status/<string:job_id>', methods=['GET'])
+@token_required
+def get_interaction_status(job_id):
     user_id = request.user.get("user_id")
     interaction = JobInteraction.find(user_id, job_id)
 
-    if interaction:
-        interaction.view_count += 1
-        interaction.last_viewed = datetime.utcnow()
-        interaction.update()
-    else:
-        interaction = JobInteraction(
-            user_id=user_id, job_id=job_id, view_count=1, last_viewed=datetime.utcnow()
-        )
-        interaction.save()
+    try:
+        response = requests.get(f"{RAILS_API_URL}/job_posts/{job_id}")
+        response.raise_for_status()
+        job_post_data = response.json()
+    except requests.exceptions.RequestException as e:
+        print("Error fetching job post from Rails API:", e)
+        return jsonify({"error": "Failed to fetch job post"}), 500
 
-    return jsonify({}), 200
+    if job_post_data:
+        response = {
+            "isPinned": interaction.is_pinned if interaction else False,
+            "isSaved": interaction.is_saved if interaction else False,
+            "hasFollowUp": interaction.has_follow_up if interaction else False,
+            "viewCount": job_post_data.get('view_count', 0),  
+            "lastViewed": job_post_data.get('last_viewed'),
+        }
+    else:
+        # If no job post exists, return default values
+        response = {
+            "isPinned": False,
+            "isSaved": False,
+            "hasFollowUp": False,
+            "viewCount": 0,
+            "lastViewed": None,
+        }
+
+    return jsonify(response), 200
+

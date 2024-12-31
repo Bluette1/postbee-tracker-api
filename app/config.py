@@ -18,6 +18,28 @@ class Config:
         "password": os.getenv("MONGODB_PASS"),
     }
 
+    # MongoDB URI for connection
+    MONGO_URI: str = os.getenv("MONGO_URI", None)
+    
+    @classmethod
+    def init_app(cls, app):
+        """Initialize the application with the proper MongoDB URI."""
+        if cls.MONGO_URI is None:
+            cls.MONGO_URI = cls.construct_mongodb_uri(cls.MONGODB_SETTINGS)
+    
+        # Set the MONGO_URI in the app's config
+        app.config['MONGO_URI'] = cls.MONGO_URI
+        print("Initialized MONGO_URI in app config:", app.config['MONGO_URI'])  # Debugging
+        
+    @staticmethod
+    def construct_mongodb_uri(settings: Dict[str, str]) -> str:
+        """Construct MongoDB URI from settings."""
+        uri = "mongodb://"
+        if settings.get("username") and settings.get("password"):
+            uri += f"{settings['username']}:{settings['password']}@"
+        uri += f"{settings['host']}:{settings['port']}/{settings['db']}"
+        return uri
+
 
 class DevelopmentConfig(Config):
     """Development configuration."""
