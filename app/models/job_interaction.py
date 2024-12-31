@@ -1,7 +1,7 @@
 from flask_pymongo import PyMongo
 from datetime import datetime
 from bson.objectid import ObjectId
-from app import mongo  # Import the global mongo instance
+from app import mongo  
 
 
 class JobInteraction:
@@ -13,9 +13,9 @@ class JobInteraction:
         is_saved=False,
         follow_up_data=None,
         has_follow_up=False,
-        id=None,  # This will be used for the ObjectId
+        id=None,  
     ):
-        self.id = id or ObjectId()  # Set the ObjectId
+        self.id = id or ObjectId()
         self.user_id = user_id
         self.job_id = job_id
         self.is_pinned = is_pinned
