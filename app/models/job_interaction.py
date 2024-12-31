@@ -2,7 +2,10 @@ from flask_pymongo import PyMongo
 from datetime import datetime
 from bson.objectid import ObjectId
 from app import mongo  
+import logging
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class JobInteraction:
     def __init__(
@@ -52,8 +55,9 @@ class JobInteraction:
     def save(self):
         try:
             mongo.db.job_interactions.insert_one(self.to_dict())
+            logger.info("JobInteraction saved successfully for user_id: %s, job_id: %s", self.user_id, self.job_id)
         except Exception as e:
-            print("Error saving JobInteraction:", e)
+            logger.error("Error saving JobInteraction: %s", e)
             raise
 
     def update(self):
@@ -62,8 +66,9 @@ class JobInteraction:
                 {"user_id": self.user_id, "job_id": self.job_id},
                 {"$set": self.to_dict()},
             )
+            logger.info("JobInteraction updated successfully for user_id: %s, job_id: %s", self.user_id, self.job_id)
         except Exception as e:
-            print("Error updating JobInteraction:", e)
+            logger.error("Error updating JobInteraction: %s", e)
             raise
 
     @classmethod
@@ -73,10 +78,12 @@ class JobInteraction:
                 {"user_id": user_id, "job_id": job_id}
             )
             if interaction_data:
+                logger.info("JobInteraction found for user_id: %s, job_id: %s", user_id, job_id)
                 return cls.from_dict(interaction_data)
+            logger.info("No JobInteraction found for user_id: %s, job_id: %s", user_id, job_id)
             return None
         except Exception as e:
-            print("Error finding JobInteraction:", e)
+            logger.error("Error finding JobInteraction: %s", e)
             raise
 
     @classmethod
@@ -86,7 +93,7 @@ class JobInteraction:
             mongo.db.job_interactions.create_index(
                 [("user_id", 1), ("job_id", 1)], unique=True
             )
-            print("Unique index created on user_id and job_id.")
+            logger.info("Unique index created on user_id and job_id.")
         except Exception as e:
-            print("Error creating index:", e)
+            logger.error("Error creating index: %s", e)
             raise
