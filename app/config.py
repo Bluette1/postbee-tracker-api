@@ -19,17 +19,17 @@ class Config:
     }
 
     # MongoDB URI for connection
-    MONGO_URI: str = os.getenv("MONGO_URI", None)
+    MONGODB_URI: str = os.getenv("MONGODB_URI", None)
     
     @classmethod
     def init_app(cls, app):
         """Initialize the application with the proper MongoDB URI."""
-        if cls.MONGO_URI is None:
-            cls.MONGO_URI = cls.construct_mongodb_uri(cls.MONGODB_SETTINGS)
+        if cls.MONGODB_URI is None:
+            cls.MONGODB_URI = cls.construct_mongodb_uri(cls.MONGODB_SETTINGS)
     
-        # Set the MONGO_URI in the app's config
-        app.config['MONGO_URI'] = cls.MONGO_URI
-        print("Initialized MONGO_URI in app config:", app.config['MONGO_URI'])  # Debugging
+        # Set the MONGODB_URI in the app's config
+        app.config['MONGODB_URI'] = cls.MONGODB_URI
+        print("Initialized MONGODB_URI in app config:", app.config['MONGODB_URI'])  # Debugging
         
     @staticmethod
     def construct_mongodb_uri(settings: Dict[str, str]) -> str:
