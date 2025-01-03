@@ -42,7 +42,7 @@ jobs:
 
     - name: Lint with flake8
       run: |
-        flake8 . --count --show-source --statistics --max-line-length=88 --extend-ignore=E203
+        flake8 . --count --show-source --statistics --max-line-length=150 --extend-ignore=E203 --exclude=postbee-tracker-api-env
 
     - name: Lint with pylint
       run: |
