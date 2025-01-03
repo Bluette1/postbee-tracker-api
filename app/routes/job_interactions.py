@@ -1,9 +1,9 @@
-from datetime import datetime
-from flask import Blueprint, jsonify, request, current_app
-from app.utils.auth import token_required
-from app.models.job_interaction import JobInteraction
 import requests
+from flask import Blueprint, current_app, jsonify, request
+
 from app.config import get_config
+from app.models.job_interaction import JobInteraction
+from app.utils.auth import token_required
 
 logger = current_app.logger
 

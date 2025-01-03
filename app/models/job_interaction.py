@@ -1,9 +1,12 @@
-from flask_pymongo import PyMongo, current_app
 from datetime import datetime
+
 from bson.objectid import ObjectId
+from flask_pymongo import current_app
+
 from app import mongo
 
 logger = current_app.logger
+
 
 class JobInteraction:
     def __init__(
@@ -54,7 +57,11 @@ class JobInteraction:
         """Save the JobInteraction to the database."""
         try:
             mongo.db.job_interactions.insert_one(self.to_dict())
-            logger.info("JobInteraction saved successfully for user_id: %s, job_id: %s", self.user_id, self.job_id)
+            logger.info(
+                "JobInteraction saved successfully for user_id: %s, job_id: %s",
+                self.user_id,
+                self.job_id,
+            )
         except Exception as e:
             logger.error("Error saving JobInteraction: %s", e)
             raise
@@ -66,7 +73,11 @@ class JobInteraction:
                 {"user_id": self.user_id, "job_id": self.job_id},
                 {"$set": self.to_dict()},
             )
-            logger.info("JobInteraction updated successfully for user_id: %s, job_id: %s", self.user_id, self.job_id)
+            logger.info(
+                "JobInteraction updated successfully for user_id: %s, job_id: %s",
+                self.user_id,
+                self.job_id,
+            )
         except Exception as e:
             logger.error("Error updating JobInteraction: %s", e)
             raise
@@ -79,9 +90,13 @@ class JobInteraction:
                 {"user_id": user_id, "job_id": job_id}
             )
             if interaction_data:
-                logger.info("JobInteraction found for user_id: %s, job_id: %s", user_id, job_id)
+                logger.info(
+                    "JobInteraction found for user_id: %s, job_id: %s", user_id, job_id
+                )
                 return cls.from_dict(interaction_data)
-            logger.info("No JobInteraction found for user_id: %s, job_id: %s", user_id, job_id)
+            logger.info(
+                "No JobInteraction found for user_id: %s, job_id: %s", user_id, job_id
+            )
             return None
         except Exception as e:
             logger.error("Error finding JobInteraction: %s", e)

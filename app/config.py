@@ -1,9 +1,10 @@
 import os
 from typing import Dict
 
+
 class Config:
     """Base configuration."""
-    
+
     SECRET_KEY: str = os.getenv("SECRET_KEY", "your_default_secret_key")
     DEBUG: bool = False
     TESTING: bool = False
@@ -19,18 +20,20 @@ class Config:
     }
 
     # MongoDB URI for connection
-    MONGODB_URI: str = os.getenv("MONGODB_URI", None)
-    
+    MONGO_URI: str = os.getenv("MONGO_URI", None)
+
     @classmethod
     def init_app(cls, app):
         """Initialize the application with the proper MongoDB URI."""
-        if cls.MONGODB_URI is None:
-            cls.MONGODB_URI = cls.construct_mongodb_uri(cls.MONGODB_SETTINGS)
-    
-        # Set the MONGODB_URI in the app's config
-        app.config['MONGODB_URI'] = cls.MONGODB_URI
-        print("Initialized MONGODB_URI in app config:", app.config['MONGODB_URI'])  # Debugging
-        
+        if cls.MONGO_URI is None:
+            cls.MONGO_URI = cls.construct_mongodb_uri(cls.MONGODB_SETTINGS)
+
+        # Set the MONGO_URI in the app's config
+        app.config["MONGO_URI"] = cls.MONGO_URI
+        print(
+            "Initialized MONGO_URI in app config:", app.config["MONGO_URI"]
+        )  # Debugging
+
     @staticmethod
     def construct_mongodb_uri(settings: Dict[str, str]) -> str:
         """Construct MongoDB URI from settings."""
