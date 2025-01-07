@@ -34,7 +34,7 @@ class Config:
 
     # Mail Settings
     MAIL_SERVER = "smtp.gmail.com"
-    MAIL_PORT = int(os.getenv('MAIL_PORT'), "587")   # 465 for SSL
+    MAIL_PORT = int(os.getenv('MAIL_PORT', "587"))   # 465 for SSL
     MAIL_USE_TLS = bool(os.getenv("MAIL_USE_TLS", 'True') )# False if using SSL
     MAIL_USE_SSL = bool(os.getenv("MAIL_USE_SSL", 'False'))  # True if using SSL
     MAIL_USERNAME = os.getenv("MAIL_USERNAME")
