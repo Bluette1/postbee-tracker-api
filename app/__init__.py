@@ -1,15 +1,14 @@
 # pylint: skip-file
 import os
-
 from flask import Flask
 from flask_cors import CORS
 from flask_pymongo import PyMongo
-
 from app.config import get_config
 from app.utils.logger import setup_logger
+from app.celery_config import make_celery
 
 mongo = PyMongo()
-
+celery = None
 
 def create_app():
     app = Flask(__name__)
@@ -23,8 +22,14 @@ def create_app():
     setup_logger(app)
     app.logger.info(f"Starting application in {current_env} mode")
 
+    # Initialize MongoDB
     mongo.init_app(app)
     app.logger.info("MongoDB initialized")
+
+    # Initialize Celery
+    global celery
+    celery = make_celery(app)
+    app.logger.info("Celery initialized")
 
     CORS(app)
 

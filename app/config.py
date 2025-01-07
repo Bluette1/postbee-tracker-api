@@ -5,7 +5,6 @@ from typing import Dict
 class Config:
     """Base configuration."""
 
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "your_default_secret_key")
     DEBUG: bool = False
     TESTING: bool = False
     RAILS_API_URL: str = os.getenv("RAILS_API_URL", "http://localhost:3000")
@@ -21,6 +20,26 @@ class Config:
 
     # MongoDB URI for connection
     MONGO_URI: str = os.getenv("MONGO_URI", None)
+
+    # Celery Configuration
+    CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "pyamqp://guest@localhost//")
+    CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "rpc://")
+
+    # Additional Celery configurations
+    CELERY_TASK_SERIALIZER = "json"
+    CELERY_RESULT_SERIALIZER = "json"
+    CELERY_ACCEPT_CONTENT = ["json"]
+    CELERY_TIMEZONE = "UTC"
+    CELERY_ENABLE_UTC = True
+
+    # Mail Settings
+    MAIL_SERVER = "smtp.gmail.com"
+    MAIL_PORT = int(os.getenv('MAIL_PORT'), "587")   # 465 for SSL
+    MAIL_USE_TLS = bool(os.getenv("MAIL_USE_TLS", 'True') )# False if using SSL
+    MAIL_USE_SSL = bool(os.getenv("MAIL_USE_SSL", 'False'))  # True if using SSL
+    MAIL_USERNAME = os.getenv("MAIL_USERNAME")
+    MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
+    MAIL_DEFAULT_SENDER = os.getenv("MAIL_DEFAULT_SENDER")
 
     @classmethod
     def init_app(cls, app):
