@@ -8,6 +8,7 @@ class Config:
     DEBUG: bool = False
     TESTING: bool = False
     RAILS_API_URL: str = os.getenv("RAILS_API_URL", "http://localhost:3000")
+    BASE_URL: str = os.getenv("BASE_URL", "http://localhost:4200")
 
     # Default MongoDB settings
     MONGODB_SETTINGS: Dict[str, str] = {

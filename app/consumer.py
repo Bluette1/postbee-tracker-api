@@ -1,8 +1,11 @@
 import json
+import re
+
 import pika
 import requests
 from flask import Flask, current_app
 from flask_mail import Mail, Message
+
 from app.config import get_config
 
 # Initialize Flask app and Mail
@@ -12,6 +15,20 @@ app.config.from_object(config)
 mail = Mail(app)
 
 API_BASE_URL = config.RAILS_API_URL
+BASE_URL = config.BASE_URL
+
+
+def slugify(job_title, company_name):
+    """Convert job title and company name to a slug."""
+    # Combine title and company name
+    text = f"{job_title} {company_name}"
+
+    # Create a slug
+    text = text.lower()
+    text = re.sub(r"\s+", "-", text)
+    text = re.sub(r"[^\w\-]", "", text)
+    text = re.sub(r"\-\-+", "-", text)
+    return text.strip("-")
 
 
 def get_job_details(job_id):
@@ -22,8 +39,14 @@ def get_job_details(job_id):
 
         job_data = response.json()
         job_title = job_data.get("title")
-        job_link = job_data.get("link")
-        return job_title, job_link
+        company_name = job_data.get("company_title")
+
+        # Create the slugified job title with the company name
+        slugified_title = slugify(job_title, company_name)
+
+        full_job_link = f"{BASE_URL}/job-posts#{slugified_title}"
+
+        return job_title, full_job_link
     except requests.exceptions.RequestException as e:
         current_app.logger.error(
             f"Failed to fetch job details for job ID {job_id}: {e}"
