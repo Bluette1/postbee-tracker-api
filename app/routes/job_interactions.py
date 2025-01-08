@@ -112,18 +112,20 @@ def update_follow_up(job_id: str, follow_up_id: int) -> tuple:
     interaction.follow_up_data = data
     interaction.update()
     logger.info("Updated follow-up for job_id: %s by user_id: %s", job_id, user_id)
-  
-  # Collect follow-up data from the request
+
+    # Collect follow-up data from the request
     followup_data = {
-        'id': data['id'],
-        'jobId': data['jobId'],
-        'status': data['status'],
-        'notes': data.get('notes'),
-        'nextStep': data.get('nextStep'),
-        'followUpDate': data.get('followUpDate'),  # Make sure this is formatted correctly
-        'createdAt': data['createdAt'],
-        'updatedAt': data['updatedAt'],
-        'user_email': user_email  # Include user_email in the follow-up data
+        "id": data["id"],
+        "jobId": data["jobId"],
+        "status": data["status"],
+        "notes": data.get("notes"),
+        "nextStep": data.get("nextStep"),
+        "followUpDate": data.get(
+            "followUpDate"
+        ),  # Make sure this is formatted correctly
+        "createdAt": data["createdAt"],
+        "updatedAt": data["updatedAt"],
+        "user_email": user_email,  # Include user_email in the follow-up data
     }
 
     send_followup_notification.delay(followup_data)

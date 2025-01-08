@@ -1,32 +1,33 @@
-import pika
 import json
-from flask import Flask, current_app
-from flask_mail import Message, Mail
+import pika
 import requests
+from flask import Flask, current_app
+from flask_mail import Mail, Message
 from app.config import get_config
 
-config = get_config()
-API_BASE_URL = config.RAILS_API_URL
-
-mail = Mail()
-
+# Initialize Flask app and Mail
 app = Flask(__name__)
+config = get_config()
+app.config.from_object(config)
+mail = Mail(app)
 
+API_BASE_URL = config.RAILS_API_URL
 
 def get_job_details(job_id):
     """Fetch job details based on job ID from the external Rails API."""
-    response = requests.get(f"{API_BASE_URL}/jobs/{job_id}")
-    if response.status_code == 200:
+    try:
+        response = requests.get(f"{API_BASE_URL}/jobs/{job_id}", timeout=10)
+        response.raise_for_status()
+
         job_data = response.json()
         job_title = job_data.get("title")
         job_link = job_data.get("link")
         return job_title, job_link
-    else:
+    except requests.exceptions.RequestException as e:
         current_app.logger.error(
-            f"Failed to fetch job details for job ID {job_id}: {response.status_code}"
+            f"Failed to fetch job details for job ID {job_id}: {e}"
         )
         return None, None
-
 
 def compose_followup_message(followup_data):
     """Compose the follow-up message based on the follow-up data."""
@@ -56,6 +57,23 @@ def compose_followup_message(followup_data):
     # Combine all parts into a single message
     return "\n".join(message_parts)
 
+def callback(ch, method, properties, body):
+    """Callback function to handle incoming messages."""
+    followup_data = json.loads(body)
+    user_email = followup_data["user_email"]
+
+    message = compose_followup_message(followup_data)
+
+    # Send email using Flask-Mail
+    msg = Message(subject="Follow-Up Notification", recipients=[user_email])
+    msg.body = message
+
+    try:
+        with app.app_context():  # Ensure app context is available for sending email
+            mail.send(msg)
+        current_app.logger.info(f"Follow-up notification sent to {user_email}")
+    except Exception as e:
+        current_app.logger.error(f"Failed to send notification: {e}")
 
 def start_consumer():
     """Start the Pika consumer."""
@@ -68,23 +86,9 @@ def start_consumer():
         queue="followup_notifications", on_message_callback=callback, auto_ack=True
     )
 
-    app.logger.info("Waiting for messages. To exit press CTRL+C")
-    channel.start_consuming()
+    with app.app_context():  # Start app context for logging
+        app.logger.info("Waiting for messages. To exit press CTRL+C")
+        channel.start_consuming()
 
-
-def callback(ch, method, properties, body):
-    """Callback function to handle incoming messages."""
-    followup_data = json.loads(body)
-    user_email = followup_data["user_email"]
-
-    message = compose_followup_message(followup_data)
-
-    # Send email using Flask-Mail (or any other method)
-    msg = Message(subject="Follow-Up Notification", recipients=[user_email])
-    msg.body = message
-
-    try:
-        mail.send(msg)
-        current_app.logger.info(f"Follow-up notification sent to {user_email}")
-    except Exception as e:
-        current_app.logger.error(f"Failed to send notification: {e}")
+if __name__ == "__main__":
+    start_consumer()

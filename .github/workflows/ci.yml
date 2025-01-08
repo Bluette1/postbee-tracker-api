@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ master, develop, feature/set-up-gitHub-actions-workflow-2 ]
+    branches: [ master, develop, feature/implement-notification-system-with-pika-and-celery-16 ]
   pull_request:
-    branches: [ master, develop, feature/set-up-gitHub-actions-workflow-2 ]
+    branches: [ master, develop, feature/implement-notification-system-with-pika-and-celery-16 ]
 
 jobs:
   test:

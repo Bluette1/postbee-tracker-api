@@ -112,6 +112,35 @@ Replace `app` with the actual module name where your `celery` instance is define
 - Ensure that you have all necessary dependencies installed and your database is properly configured before running the application.
 - If you are using Docker, you may have a separate service defined in your `docker-compose.yml` file for the Celery worker. Make sure to start that service as well.
 
+
+### 3. Running the Consumer
+
+To start the consumer that processes messages from RabbitMQ and sends follow-up notifications, follow these steps:
+
+### Prerequisites
+
+- Ensure that RabbitMQ is running.
+- Make sure your virtual environment is activated, if you are using one.
+
+### Starting the Consumer
+
+1. Navigate to the project root directory:
+
+   ```bash
+   cd ~/workspace/postbee-tracker-api
+   ```
+
+2. Run the consumer using the following command:
+
+   ```bash
+   python -m app.consumer
+   ```
+
+This command will start the consumer, which will listen for messages on the `followup_notifications` queue. To stop the consumer, you can press `CTRL+C` in the terminal where it is running.
+
+````
+
+
 ## CI/CD Pipeline
 
 This project uses GitHub Actions for continuous integration and continuous deployment. The pipeline includes:
@@ -148,7 +177,7 @@ flake8
 
 # Run tests with coverage
 pytest --cov=.
-```
+````
 
 ## Contributing
 

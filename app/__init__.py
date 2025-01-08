@@ -1,14 +1,17 @@
 # pylint: skip-file
 import os
+
 from flask import Flask
 from flask_cors import CORS
 from flask_pymongo import PyMongo
+
+from app.celery_config import make_celery
 from app.config import get_config
 from app.utils.logger import setup_logger
-from app.celery_config import make_celery
 
 mongo = PyMongo()
 celery = None
+
 
 def create_app():
     app = Flask(__name__)

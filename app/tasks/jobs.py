@@ -1,7 +1,7 @@
 from celery import Celery
 from flask import current_app
-from app.producer import publish_followup_notification
 
+from app.producer import publish_followup_notification
 
 celery = Celery("tasks", broker=current_app.config["CELERY_BROKER_URL"])
 
