@@ -13,6 +13,7 @@ mail = Mail(app)
 
 API_BASE_URL = config.RAILS_API_URL
 
+
 def get_job_details(job_id):
     """Fetch job details based on job ID from the external Rails API."""
     try:
@@ -28,6 +29,7 @@ def get_job_details(job_id):
             f"Failed to fetch job details for job ID {job_id}: {e}"
         )
         return None, None
+
 
 def compose_followup_message(followup_data):
     """Compose the follow-up message based on the follow-up data."""
@@ -57,6 +59,7 @@ def compose_followup_message(followup_data):
     # Combine all parts into a single message
     return "\n".join(message_parts)
 
+
 def callback(ch, method, properties, body):
     """Callback function to handle incoming messages."""
     followup_data = json.loads(body)
@@ -75,6 +78,7 @@ def callback(ch, method, properties, body):
     except Exception as e:
         current_app.logger.error(f"Failed to send notification: {e}")
 
+
 def start_consumer():
     """Start the Pika consumer."""
     connection = pika.BlockingConnection(pika.ConnectionParameters("localhost"))
@@ -89,6 +93,7 @@ def start_consumer():
     with app.app_context():  # Start app context for logging
         app.logger.info("Waiting for messages. To exit press CTRL+C")
         channel.start_consuming()
+
 
 if __name__ == "__main__":
     start_consumer()
