@@ -1,4 +1,5 @@
 import json
+import os
 import re
 
 import pika
@@ -8,10 +9,26 @@ from flask_mail import Mail, Message
 
 from app.config import get_config
 
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
 # Initialize Flask app and Mail
 app = Flask(__name__)
 config = get_config()
 app.config.from_object(config)
+app.config.update(
+    MAIL_SERVER="smtp.gmail.com",
+    MAIL_PORT=587,  # Use 587 for TLS
+    MAIL_USE_TLS=True,  # Enable TLS
+    MAIL_USE_SSL=False,  # Disable SSL
+    MAIL_USERNAME=os.getenv("MAIL_USERNAME"),
+    MAIL_PASSWORD=os.getenv("MAIL_PASSWORD"),
+    MAIL_DEFAULT_SENDER=os.getenv("MAIL_DEFAULT_SENDER"),
+)
+
+
 mail = Mail(app)
 
 API_BASE_URL = config.RAILS_API_URL
@@ -34,7 +51,7 @@ def slugify(job_title, company_name):
 def get_job_details(job_id):
     """Fetch job details based on job ID from the external Rails API."""
     try:
-        response = requests.get(f"{API_BASE_URL}/jobs/{job_id}", timeout=10)
+        response = requests.get(f"{API_BASE_URL}/job_posts/{job_id}", timeout=10)
         response.raise_for_status()
 
         job_data = response.json()

@@ -63,6 +63,7 @@ def toggle_save(job_id: str) -> tuple:
 @token_required
 def create_follow_up(job_id: str) -> tuple:
     user_id = request.user.get("user_id")
+    user_email = request.user.get("email")
     data = request.get_json()
 
     if not data:
@@ -85,14 +86,20 @@ def create_follow_up(job_id: str) -> tuple:
         interaction.update()
         logger.info("Updated follow-up for job_id: %s by user_id: %s", job_id, user_id)
 
+    data["user_email"] = user_email
+
+    try:
+        send_followup_notification(data)
+
+    except Exception as e:
+        print(f"Error sending follow-up notification: {e}")
+
     return jsonify(data), 200
 
 
-@job_interaction_routes.route(
-    "/<string:job_id>/follow-ups/<int:follow_up_id>", methods=["PUT"]
-)
+@job_interaction_routes.route("/<string:job_id>/follow-ups", methods=["PUT"])
 @token_required
-def update_follow_up(job_id: str, follow_up_id: int) -> tuple:
+def update_follow_up(job_id: str) -> tuple:
     user_id = request.user.get("user_id")
     user_email = request.user.get("email")
     data = request.get_json()
@@ -115,20 +122,19 @@ def update_follow_up(job_id: str, follow_up_id: int) -> tuple:
 
     # Collect follow-up data from the request
     followup_data = {
-        "id": data["id"],
         "jobId": data["jobId"],
         "status": data["status"],
         "notes": data.get("notes"),
         "nextStep": data.get("nextStep"),
-        "followUpDate": data.get(
-            "followUpDate"
-        ),  # Make sure this is formatted correctly
-        "createdAt": data["createdAt"],
-        "updatedAt": data["updatedAt"],
-        "user_email": user_email,  # Include user_email in the follow-up data
+        "followUpDate": data.get("followUpDate"),
+        "user_email": user_email,
     }
 
-    send_followup_notification.delay(followup_data)
+    try:
+        send_followup_notification(followup_data)
+
+    except Exception as e:
+        print(f"Error sending follow-up notification: {e}")
 
     return jsonify(data), 200
 
