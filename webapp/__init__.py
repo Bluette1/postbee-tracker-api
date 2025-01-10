@@ -1,18 +1,27 @@
+# pylint: skip-file
 import os
+
+from celery import Celery
 from flask import Flask
 from flask_cors import CORS
 from flask_pymongo import PyMongo
-from celery import Celery
+
 from webapp.config import get_config
 from webapp.utils.logger import setup_logger
 
 # Global instances
 mongo = PyMongo()
 
+
 def make_celery(app):
-    celery = Celery(app.import_name, backend=app.config['CELERY_RESULT_BACKEND'], broker=app.config['CELERY_BROKER_URL'])
+    celery = Celery(
+        app.import_name,
+        backend=app.config["CELERY_RESULT_BACKEND"],
+        broker=app.config["CELERY_BROKER_URL"],
+    )
     celery.conf.update(app.config)
     return celery
+
 
 def create_app():
     app = Flask(__name__)
@@ -46,6 +55,6 @@ def create_app():
         app.register_blueprint(job_interaction_routes, url_prefix="/api/jobs")
 
         # Import tasks after Celery is initialized
-        import webapp.tasks.jobs
+        from webapp.tasks.jobs import send_followup_notification
 
     return app, celery

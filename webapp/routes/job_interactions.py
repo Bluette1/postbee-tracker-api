@@ -1,8 +1,9 @@
 # import datetime
 from datetime import datetime, timezone
+
 import requests
-from flask import Blueprint, current_app, jsonify, request
 from dateutil import parser
+from flask import Blueprint, current_app, jsonify, request
 
 from webapp.config import get_config
 from webapp.models.job_interaction import JobInteraction
@@ -97,31 +98,31 @@ def create_follow_up(job_id: str) -> tuple:
     # except Exception as e:
     #     print(f"Error sending follow-up notification: {e}")
 
-     # Schedule the email notification
+    # Schedule the email notification
     # follow_up_date = datetime.fromisoformat(data["followUpDate"].replace("Z", "+00:00"))
     # follow_up_date = parser.isoparse(data["followUpDate"])
     # # Calculate delay
     # delay = (follow_up_date - datetime.utcnow()).total_seconds()
-        # Use dateutil.parser to parse the followUpDate
+    # Use dateutil.parser to parse the followUpDate
     # follow_up_date = parser.isoparse(data["followUpDate"])
-    
+
     # # Calculate delay
     # delay = (follow_up_date - datetime.utcnow()).total_seconds()
 
     # Use dateutil.parser to parse the followUpDate
     follow_up_date = parser.isoparse(data["followUpDate"])
-    
+
     # Calculate delay using offset-aware datetime
     delay = (follow_up_date - datetime.now(timezone.utc)).total_seconds()
-
 
     if delay > 0:
         # Schedule the task
         send_followup_notification.apply_async(args=[data], eta=follow_up_date)
-        logger.info(f"Scheduled follow-up notification for job ID: {data['jobId']} at {follow_up_date}.")
+        logger.info(
+            f"Scheduled follow-up notification for job ID: {data['jobId']} at {follow_up_date}."
+        )
     else:
         logger.warning("The follow-up date is in the past. Email will not be sent.")
-
 
     return jsonify(data), 200
 
@@ -165,31 +166,31 @@ def update_follow_up(job_id: str) -> tuple:
     # except Exception as e:
     #     print(f"Error sending follow-up notification: {e}")
 
-     # Schedule the email notification
+    # Schedule the email notification
     # follow_up_date = datetime.fromisoformat(data["followUpDate"].replace("Z", "+00:00"))
     # follow_up_date = parser.isoparse(data["followUpDate"])
     # # Calculate delay
     # delay = (follow_up_date - datetime.utcnow()).total_seconds()
-        # Use dateutil.parser to parse the followUpDate
+    # Use dateutil.parser to parse the followUpDate
     # follow_up_date = parser.isoparse(data["followUpDate"])
-    
+
     # # Calculate delay
     # delay = (follow_up_date - datetime.utcnow()).total_seconds()
 
     # Use dateutil.parser to parse the followUpDate
     follow_up_date = parser.isoparse(data["followUpDate"])
-    
+
     # Calculate delay using offset-aware datetime
     delay = (follow_up_date - datetime.now(timezone.utc)).total_seconds()
-
 
     if delay > 0:
         # Schedule the task
         send_followup_notification.apply_async(args=[followup_data], eta=follow_up_date)
-        logger.info(f"Scheduled follow-up notification for job ID: {data['jobId']} at {follow_up_date}.")
+        logger.info(
+            f"Scheduled follow-up notification for job ID: {data['jobId']} at {follow_up_date}."
+        )
     else:
         logger.warning("The follow-up date is in the past. Email will not be sent.")
-
 
     return jsonify(data), 200
 
