@@ -7,7 +7,7 @@ import requests
 from flask import Flask, current_app
 from flask_mail import Mail, Message
 
-from app.config import get_config
+from webapp.config import get_config
 
 from dotenv import load_dotenv
 
@@ -103,7 +103,8 @@ def compose_followup_message(followup_data):
 def callback(ch, method, properties, body):
     """Callback function to handle incoming messages."""
     followup_data = json.loads(body)
-    user_email = followup_data["user_email"]
+    # user_email = followup_data["user_email"]
+    user_email= "marylene.sawyer@gmail.com"
 
     message = compose_followup_message(followup_data)
 

@@ -120,6 +120,9 @@ To start the consumer that processes messages from RabbitMQ and sends follow-up 
 ### Prerequisites
 
 - Ensure that RabbitMQ is running.
+   ```
+   sudo systemctl start rabbitmq-server
+   ```
 - Make sure your virtual environment is activated, if you are using one.
 
 ### Starting the Consumer
@@ -133,7 +136,7 @@ To start the consumer that processes messages from RabbitMQ and sends follow-up 
 2. Run the consumer using the following command:
 
    ```bash
-   python -m app.consumer
+   python -m webapp.consumer
    ```
 
 This command will start the consumer, which will listen for messages on the `followup_notifications` queue. To stop the consumer, you can press `CTRL+C` in the terminal where it is running.
