@@ -1,4 +1,3 @@
-# import datetime
 from datetime import datetime, timezone
 
 import requests
@@ -92,23 +91,6 @@ def create_follow_up(job_id: str) -> tuple:
 
     data["user_email"] = user_email
 
-    # try:
-    #     send_followup_notification(data)
-
-    # except Exception as e:
-    #     print(f"Error sending follow-up notification: {e}")
-
-    # Schedule the email notification
-    # follow_up_date = datetime.fromisoformat(data["followUpDate"].replace("Z", "+00:00"))
-    # follow_up_date = parser.isoparse(data["followUpDate"])
-    # # Calculate delay
-    # delay = (follow_up_date - datetime.utcnow()).total_seconds()
-    # Use dateutil.parser to parse the followUpDate
-    # follow_up_date = parser.isoparse(data["followUpDate"])
-
-    # # Calculate delay
-    # delay = (follow_up_date - datetime.utcnow()).total_seconds()
-
     # Use dateutil.parser to parse the followUpDate
     follow_up_date = parser.isoparse(data["followUpDate"])
 
@@ -159,23 +141,6 @@ def update_follow_up(job_id: str) -> tuple:
         "followUpDate": data.get("followUpDate"),
         "user_email": user_email,
     }
-
-    # try:
-    #     send_followup_notification(followup_data)
-
-    # except Exception as e:
-    #     print(f"Error sending follow-up notification: {e}")
-
-    # Schedule the email notification
-    # follow_up_date = datetime.fromisoformat(data["followUpDate"].replace("Z", "+00:00"))
-    # follow_up_date = parser.isoparse(data["followUpDate"])
-    # # Calculate delay
-    # delay = (follow_up_date - datetime.utcnow()).total_seconds()
-    # Use dateutil.parser to parse the followUpDate
-    # follow_up_date = parser.isoparse(data["followUpDate"])
-
-    # # Calculate delay
-    # delay = (follow_up_date - datetime.utcnow()).total_seconds()
 
     # Use dateutil.parser to parse the followUpDate
     follow_up_date = parser.isoparse(data["followUpDate"])
