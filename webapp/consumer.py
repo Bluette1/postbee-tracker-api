@@ -93,7 +93,11 @@ def compose_followup_message(followup_data):
 
     # Include the follow-up date if available
     if followup_data.get("followUpDate"):
-        message_parts.append(f"Follow-Up Date: {followup_data['followUpDate']}")
+        # Format the date in a readable way
+        follow_up_date = followup_data["followUpDate"]
+        readable_date = follow_up_date.strftime("%B %d, %Y, %I:%M %p UTC")
+
+        message_parts.append(f"Follow-Up Date: {readable_date}")
 
     # Combine all parts into a single message
     return "\n".join(message_parts)
@@ -102,8 +106,7 @@ def compose_followup_message(followup_data):
 def callback(ch, method, properties, body):
     """Callback function to handle incoming messages."""
     followup_data = json.loads(body)
-    # user_email = followup_data["user_email"]
-    user_email = "marylene.sawyer@gmail.com"
+    user_email = followup_data["user_email"]
 
     message = compose_followup_message(followup_data)
 
