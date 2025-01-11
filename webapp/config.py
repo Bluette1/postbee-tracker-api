@@ -1,14 +1,19 @@
 import os
 from typing import Dict
 
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
 
 class Config:
     """Base configuration."""
 
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "your_default_secret_key")
     DEBUG: bool = False
     TESTING: bool = False
     RAILS_API_URL: str = os.getenv("RAILS_API_URL", "http://localhost:3000")
+    BASE_URL: str = os.getenv("BASE_URL", "http://localhost:4200")
 
     # Default MongoDB settings
     MONGODB_SETTINGS: Dict[str, str] = {
@@ -21,6 +26,17 @@ class Config:
 
     # MongoDB URI for connection
     MONGO_URI: str = os.getenv("MONGO_URI", None)
+
+    # Celery Configuration
+    CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "pyamqp://guest@localhost//")
+    CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "rpc://")
+
+    # Additional Celery configurations
+    CELERY_TASK_SERIALIZER = "json"
+    CELERY_RESULT_SERIALIZER = "json"
+    CELERY_ACCEPT_CONTENT = ["json"]
+    CELERY_TIMEZONE = "UTC"
+    CELERY_ENABLE_UTC = True
 
     @classmethod
     def init_app(cls, app):

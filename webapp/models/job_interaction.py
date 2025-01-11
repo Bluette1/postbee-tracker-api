@@ -3,7 +3,7 @@ from datetime import datetime
 from bson.objectid import ObjectId
 from flask_pymongo import current_app
 
-from app import mongo
+from webapp import mongo
 
 logger = current_app.logger
 

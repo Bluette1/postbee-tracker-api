@@ -3,7 +3,7 @@ from functools import wraps
 import requests
 from flask import jsonify, request
 
-from app.config import get_config
+from webapp.config import get_config
 
 config = get_config()
 

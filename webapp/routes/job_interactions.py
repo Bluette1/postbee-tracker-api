@@ -1,9 +1,13 @@
+from datetime import datetime, timezone
+
 import requests
+from dateutil import parser
 from flask import Blueprint, current_app, jsonify, request
 
-from app.config import get_config
-from app.models.job_interaction import JobInteraction
-from app.utils.auth import token_required
+from webapp.config import get_config
+from webapp.models.job_interaction import JobInteraction
+from webapp.tasks.jobs import send_followup_notification
+from webapp.utils.auth import token_required
 
 logger = current_app.logger
 
@@ -62,6 +66,7 @@ def toggle_save(job_id: str) -> tuple:
 @token_required
 def create_follow_up(job_id: str) -> tuple:
     user_id = request.user.get("user_id")
+    user_email = request.user.get("email")
     data = request.get_json()
 
     if not data:
@@ -84,15 +89,31 @@ def create_follow_up(job_id: str) -> tuple:
         interaction.update()
         logger.info("Updated follow-up for job_id: %s by user_id: %s", job_id, user_id)
 
+    data["user_email"] = user_email
+
+    # Use dateutil.parser to parse the followUpDate
+    follow_up_date = parser.isoparse(data["followUpDate"])
+
+    # Calculate delay using offset-aware datetime
+    delay = (follow_up_date - datetime.now(timezone.utc)).total_seconds()
+
+    if delay > 0:
+        # Schedule the task
+        send_followup_notification.apply_async(args=[data], eta=follow_up_date)
+        logger.info(
+            f"Scheduled follow-up notification for job ID: {data['jobId']} at {follow_up_date}."
+        )
+    else:
+        logger.warning("The follow-up date is in the past. Email will not be sent.")
+
     return jsonify(data), 200
 
 
-@job_interaction_routes.route(
-    "/<string:job_id>/follow-ups/<int:follow_up_id>", methods=["PUT"]
-)
+@job_interaction_routes.route("/<string:job_id>/follow-ups", methods=["PUT"])
 @token_required
-def update_follow_up(job_id: str, follow_up_id: int) -> tuple:
+def update_follow_up(job_id: str) -> tuple:
     user_id = request.user.get("user_id")
+    user_email = request.user.get("email")
     data = request.get_json()
 
     if not data:
@@ -110,6 +131,31 @@ def update_follow_up(job_id: str, follow_up_id: int) -> tuple:
     interaction.follow_up_data = data
     interaction.update()
     logger.info("Updated follow-up for job_id: %s by user_id: %s", job_id, user_id)
+
+    # Collect follow-up data from the request
+    followup_data = {
+        "jobId": data["jobId"],
+        "status": data["status"],
+        "notes": data.get("notes"),
+        "nextStep": data.get("nextStep"),
+        "followUpDate": data.get("followUpDate"),
+        "user_email": user_email,
+    }
+
+    # Use dateutil.parser to parse the followUpDate
+    follow_up_date = parser.isoparse(data["followUpDate"])
+
+    # Calculate delay using offset-aware datetime
+    delay = (follow_up_date - datetime.now(timezone.utc)).total_seconds()
+
+    if delay > 0:
+        # Schedule the task
+        send_followup_notification.apply_async(args=[followup_data], eta=follow_up_date)
+        logger.info(
+            f"Scheduled follow-up notification for job ID: {data['jobId']} at {follow_up_date}."
+        )
+    else:
+        logger.warning("The follow-up date is in the past. Email will not be sent.")
 
     return jsonify(data), 200
 
