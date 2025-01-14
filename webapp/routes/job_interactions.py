@@ -9,8 +9,10 @@ from webapp.models.job_interaction import JobInteraction
 from webapp.tasks.jobs import send_followup_notification
 from webapp.utils.auth import token_required
 
+
 def get_logger():
     return current_app.logger
+
 
 config = get_config()
 job_interaction_routes = Blueprint("job_interaction_routes", __name__)
@@ -20,7 +22,7 @@ RAILS_API_URL = config.RAILS_API_URL
 @job_interaction_routes.route("/<string:job_id>/pin", methods=["POST"])
 @token_required
 def toggle_pin(job_id: str) -> tuple:
-    logger = get_logger() 
+    logger = get_logger()
     user_id = request.user.get("user_id")
     interaction = JobInteraction.find(user_id, job_id)
 
@@ -171,6 +173,7 @@ def get_follow_up(job_id: str) -> tuple:
     logger = get_logger()
     user_id = request.user.get("user_id")
     interaction = JobInteraction.find(user_id, job_id)
+    print("Interaction))))))))))))))))))))))))", interaction)
 
     if not interaction or not interaction.follow_up_data:
         logger.warning(

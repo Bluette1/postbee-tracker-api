@@ -1,16 +1,13 @@
 import json
-import os
 from datetime import datetime
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import patch, MagicMock
 from flask import Flask
 from flask_mail import Mail
-from webapp.consumer import (
-    slugify,
-    get_job_details,
-    compose_followup_message,
-    callback,
-)
+
+from webapp.consumer import (callback, compose_followup_message,
+                             get_job_details, slugify)
 
 
 @pytest.fixture

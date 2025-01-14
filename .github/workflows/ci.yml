@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ master, develop, feature/implement-notification-system-with-pika-and-celery-16 ]
+    branches: [ master, develop]
   pull_request:
-    branches: [ master, develop, feature/implement-notification-system-with-pika-and-celery-16 ]
+    branches: [ master, develop]
 
 jobs:
   test:

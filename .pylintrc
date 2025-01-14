@@ -1,17 +1,10 @@
 [MASTER]
 # Add files or directories to ignore
-ignore=
-    .git,
-    __pycache__,
-    postbee-tracker-api-env,
-    venv,
-    .env,
-    migrations,
-    tests
+ignore=.git,__pycache__,postbee-tracker-api-env,venv,.env,migrations,tests
 
 # Python files that pylint should not process
-ignore-patterns=
-    test_*.py
+ignore-patterns=test_.*\.py,test_.*\.py
+    
 
 # Use multiple processes to speed up Pylint (use "0" for auto)
 jobs=0

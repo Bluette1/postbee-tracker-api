@@ -1,8 +1,11 @@
 import unittest
-from unittest.mock import patch, MagicMock
-from flask import json
-from webapp import create_app
+from unittest.mock import MagicMock, patch
+
 import requests
+from flask import json
+
+from webapp import create_app
+from webapp.models.job_interaction import JobInteraction
 
 
 class JobInteractionsTestCase(unittest.TestCase):
@@ -121,19 +124,49 @@ class JobInteractionsTestCase(unittest.TestCase):
         self.assertIn("viewCount", data)  # Ensure 'viewCount' key exists
         self.assertEqual(data["viewCount"], 10)
 
-    @patch('webapp.utils.auth.validate_token')  # Mock validate_token
+    @patch("webapp.utils.auth.validate_token")  # Mock validate_token
     def test_toggle_pin(self, mock_validate_token):
-        mock_validate_token.return_value = {"user_id": "123", "email": "test@example.com"}
-                
-        response = self.client.post('/api/jobs/job_id/pin', headers={'Authorization': 'Bearer token'})
+        mock_validate_token.return_value = {
+            "user_id": "123",
+            "email": "test@example.com",
+        }
+
+        response = self.client.post(
+            "/api/jobs/job_id/pin", headers={"Authorization": "Bearer token"}
+        )
         self.assertEqual(response.status_code, 200)
 
-    @patch('webapp.utils.auth.validate_token')  # Mock validate_token
-    def test_toggle_save(self ,mock_validate_token):
-        mock_validate_token.return_value = {"user_id": "123", "email": "test@example.com"}
+    @patch("webapp.utils.auth.validate_token")  # Mock validate_token
+    def test_toggle_save(self, mock_validate_token):
+        mock_validate_token.return_value = {
+            "user_id": "123",
+            "email": "test@example.com",
+        }
 
-        response = self.client.post('/api/jobs/job_id/save', headers={'Authorization': 'Bearer token'})
+        response = self.client.post(
+            "/api/jobs/job_id/save", headers={"Authorization": "Bearer token"}
+        )
         self.assertEqual(response.status_code, 200)
+
+    @patch("webapp.utils.auth.validate_token")  # Mock the token validation
+    @patch("webapp.models.JobInteraction")  # Mock the JobInteraction model
+    def test_get_follow_up_not_found(self, mock_job_interaction, mock_validate_token):
+        mock_validate_token.return_value = {
+            "user_id": "user_id",
+            "email": "test@example.com",
+        }
+
+        # Set up the mock to return None for the find method
+        mock_job_interaction.find.return_value = None
+
+        response = self.client.get(
+            "/api/jobs/job_id/follow-ups", headers={"Authorization": "Bearer token"}
+        )
+
+        # Assert the response status code and message
+        self.assertEqual(response.status_code, 404)
+        data = json.loads(response.data)
+        self.assertEqual(data["message"], "Follow-up not found")
 
 
 if __name__ == "__main__":

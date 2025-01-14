@@ -1,7 +1,10 @@
 from datetime import datetime
+
 from bson.objectid import ObjectId
-from webapp import mongo
 from flask import current_app
+
+from webapp import mongo
+
 
 class JobInteraction:
     def __init__(
@@ -112,7 +115,7 @@ class JobInteraction:
     def _log_info(cls, message, *args):
         """Log an info message."""
         logger = current_app.logger
-        logger.info(message, *args)  # Correctly pass message and args to logger
+        logger.info(message, *args)
 
     @classmethod
     def _log_error(cls, message, *args):
