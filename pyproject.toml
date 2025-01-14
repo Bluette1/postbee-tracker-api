@@ -1,2 +1,3 @@
 [tool.isort]
 skip = ["postbee-tracker-api-env"]
+profile = "black"
