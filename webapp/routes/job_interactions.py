@@ -173,7 +173,6 @@ def get_follow_up(job_id: str) -> tuple:
     logger = get_logger()
     user_id = request.user.get("user_id")
     interaction = JobInteraction.find(user_id, job_id)
-    print("Interaction))))))))))))))))))))))))", interaction)
 
     if not interaction or not interaction.follow_up_data:
         logger.warning(

@@ -47,51 +47,6 @@ def slugify(job_title, company_name):
     return text.strip("-")
 
 
-# def get_job_details(job_id):
-#     """Fetch job details based on job ID from the external Rails API."""
-#     try:
-#         response = requests.get(f"{API_BASE_URL}/job_posts/{job_id}", timeout=10)
-#         response.raise_for_status()
-
-#         job_data = response.json()
-#         job_title = job_data.get("title")
-#         company_name = job_data.get("company_title")
-
-#         # Create the slugified job title with the company name
-#         slugified_title = slugify(job_title, company_name)
-
-#         full_job_link = f"{BASE_URL}/job-posts#{slugified_title}"
-
-#         return job_title, full_job_link
-#     except requests.exceptions.RequestException as e:
-#         current_app.logger.error(
-#             f"Failed to fetch job details for job ID {job_id}: {e}"
-#         )
-#         return None, None
-
-# def get_job_details(job_id):
-#     """Fetch job details based on job ID from the external Rails API."""
-#     try:
-#         response = requests.get(f"{API_BASE_URL}/job_posts/{job_id}", timeout=10)
-#         response.raise_for_status()
-
-#         job_data = response.json()
-#         job_title = job_data.get("title")
-#         company_name = job_data.get("company_title")
-
-#         # Create the slugified job title with the company name
-#         slugified_title = slugify(job_title, company_name)
-
-#         full_job_link = f"{BASE_URL}/job-posts#{slugified_title}"
-
-#         return job_title, full_job_link
-#     except requests.exceptions.RequestException as e:
-#         current_app.logger.error(
-#             f"Failed to fetch job details for job ID {job_id}: {e}"
-#         )
-#         return None, None
-
-
 def get_job_details(job_id):
     """Fetch job details based on job ID from the external Rails API."""
     try:
