@@ -1,8 +1,9 @@
 import json
 from unittest.mock import MagicMock, patch
 
-from webapp.producer import \
-    publish_followup_notification  # Adjust the import based on your structure
+from webapp.producer import (
+    publish_followup_notification,
+)  # Adjust the import based on your structure
 
 
 def test_publish_followup_notification():
