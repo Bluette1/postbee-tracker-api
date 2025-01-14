@@ -45,4 +45,3 @@ class JobInteractionTestCase(TestCase):
         JobInteraction.create_index()
         mock_mongo.db.job_interactions.create_index.assert_called_once()
 
-# Add more tests as necessary...
