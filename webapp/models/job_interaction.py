@@ -1,12 +1,7 @@
 from datetime import datetime
-
 from bson.objectid import ObjectId
-from flask_pymongo import current_app
-
 from webapp import mongo
-
-logger = current_app.logger
-
+from flask import current_app
 
 class JobInteraction:
     def __init__(
@@ -42,7 +37,6 @@ class JobInteraction:
 
     @classmethod
     def from_dict(cls, data):
-        """Create a JobInteraction from a dictionary."""
         return cls(
             user_id=data["user_id"],
             job_id=data["job_id"],
@@ -57,13 +51,13 @@ class JobInteraction:
         """Save the JobInteraction to the database."""
         try:
             mongo.db.job_interactions.insert_one(self.to_dict())
-            logger.info(
+            self._log_info(
                 "JobInteraction saved successfully for user_id: %s, job_id: %s",
                 self.user_id,
                 self.job_id,
             )
         except Exception as e:
-            logger.error("Error saving JobInteraction: %s", e)
+            self._log_error("Error saving JobInteraction: %s", e)
             raise
 
     def update(self):
@@ -73,13 +67,13 @@ class JobInteraction:
                 {"user_id": self.user_id, "job_id": self.job_id},
                 {"$set": self.to_dict()},
             )
-            logger.info(
+            self._log_info(
                 "JobInteraction updated successfully for user_id: %s, job_id: %s",
                 self.user_id,
                 self.job_id,
             )
         except Exception as e:
-            logger.error("Error updating JobInteraction: %s", e)
+            self._log_error("Error updating JobInteraction: %s", e)
             raise
 
     @classmethod
@@ -90,16 +84,16 @@ class JobInteraction:
                 {"user_id": user_id, "job_id": job_id}
             )
             if interaction_data:
-                logger.info(
+                cls._log_info(
                     "JobInteraction found for user_id: %s, job_id: %s", user_id, job_id
                 )
                 return cls.from_dict(interaction_data)
-            logger.info(
+            cls._log_info(
                 "No JobInteraction found for user_id: %s, job_id: %s", user_id, job_id
             )
             return None
         except Exception as e:
-            logger.error("Error finding JobInteraction: %s", e)
+            cls._log_error("Error finding JobInteraction: %s", e)
             raise
 
     @classmethod
@@ -109,7 +103,19 @@ class JobInteraction:
             mongo.db.job_interactions.create_index(
                 [("user_id", 1), ("job_id", 1)], unique=True
             )
-            logger.info("Unique index created on user_id and job_id.")
+            cls._log_info("Unique index created on user_id and job_id.")
         except Exception as e:
-            logger.error("Error creating index: %s", e)
+            cls._log_error("Error creating index: %s", e)
             raise
+
+    @classmethod
+    def _log_info(cls, message, *args):
+        """Log an info message."""
+        logger = current_app.logger
+        logger.info(message, *args)  # Correctly pass message and args to logger
+
+    @classmethod
+    def _log_error(cls, message, *args):
+        """Log an error message."""
+        logger = current_app.logger
+        logger.error(message, *args)  # Correctly pass message and args to logger

@@ -9,7 +9,8 @@ from webapp.models.job_interaction import JobInteraction
 from webapp.tasks.jobs import send_followup_notification
 from webapp.utils.auth import token_required
 
-logger = current_app.logger
+def get_logger():
+    return current_app.logger
 
 config = get_config()
 job_interaction_routes = Blueprint("job_interaction_routes", __name__)
@@ -19,6 +20,7 @@ RAILS_API_URL = config.RAILS_API_URL
 @job_interaction_routes.route("/<string:job_id>/pin", methods=["POST"])
 @token_required
 def toggle_pin(job_id: str) -> tuple:
+    logger = get_logger() 
     user_id = request.user.get("user_id")
     interaction = JobInteraction.find(user_id, job_id)
 
@@ -42,6 +44,7 @@ def toggle_pin(job_id: str) -> tuple:
 @job_interaction_routes.route("/<string:job_id>/save", methods=["POST"])
 @token_required
 def toggle_save(job_id: str) -> tuple:
+    logger = get_logger()
     user_id = request.user.get("user_id")
     interaction = JobInteraction.find(user_id, job_id)
 
@@ -65,6 +68,7 @@ def toggle_save(job_id: str) -> tuple:
 @job_interaction_routes.route("/<string:job_id>/follow-ups", methods=["POST"])
 @token_required
 def create_follow_up(job_id: str) -> tuple:
+    logger = get_logger()
     user_id = request.user.get("user_id")
     user_email = request.user.get("email")
     data = request.get_json()
@@ -112,6 +116,7 @@ def create_follow_up(job_id: str) -> tuple:
 @job_interaction_routes.route("/<string:job_id>/follow-ups", methods=["PUT"])
 @token_required
 def update_follow_up(job_id: str) -> tuple:
+    logger = get_logger()
     user_id = request.user.get("user_id")
     user_email = request.user.get("email")
     data = request.get_json()
@@ -163,6 +168,7 @@ def update_follow_up(job_id: str) -> tuple:
 @job_interaction_routes.route("/<string:job_id>/follow-ups", methods=["GET"])
 @token_required
 def get_follow_up(job_id: str) -> tuple:
+    logger = get_logger()
     user_id = request.user.get("user_id")
     interaction = JobInteraction.find(user_id, job_id)
 
@@ -178,6 +184,7 @@ def get_follow_up(job_id: str) -> tuple:
 
 @job_interaction_routes.route("/<string:job_id>/view", methods=["POST"])
 def track_view(job_id):
+    logger = get_logger()
     logger.info("Tracking view for job_id: %s", job_id)
     try:
         response = requests.post(
@@ -204,6 +211,7 @@ def track_view(job_id):
 @job_interaction_routes.route("/<string:job_id>/interaction", methods=["POST"])
 @token_required
 def track_interaction(job_id):
+    logger = get_logger()
     user_id = request.user.get("user_id")
     interaction = JobInteraction.find(user_id, job_id)
 
@@ -220,6 +228,7 @@ def track_interaction(job_id):
 @job_interaction_routes.route("/status/<string:job_id>", methods=["GET"])
 @token_required
 def get_interaction_status(job_id):
+    logger = get_logger()
     user_id = request.user.get("user_id")
     interaction = JobInteraction.find(user_id, job_id)
 
