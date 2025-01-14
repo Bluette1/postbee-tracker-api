@@ -6,7 +6,8 @@ import pytest
 from flask import Flask
 from flask_mail import Mail
 
-from webapp.consumer import callback, compose_followup_message, get_job_details, slugify
+from webapp.consumer import (callback, compose_followup_message,
+                             get_job_details, slugify)
 
 
 @pytest.fixture
