@@ -26,3 +26,16 @@ def publish_followup_notification(followup_data):
     )
 
     connection.close()
+
+
+def publish_job_application(job_id, user_id):
+    connection = pika.BlockingConnection(pika.ConnectionParameters("localhost"))
+    channel = connection.channel()
+    channel.queue_declare(queue="job_applications")
+
+    message = {"job_id": job_id, "user_id": user_id}
+
+    channel.basic_publish(
+        exchange="", routing_key="job_applications", body=json.dumps(message)
+    )
+    connection.close()
