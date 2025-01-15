@@ -51,7 +51,7 @@ def get_job_details(job_id):
     """Fetch job details based on job ID from the external Rails API."""
     try:
         response = requests.get(f"{API_BASE_URL}/job_posts/{job_id}", timeout=10)
-        response.raise_for_status()
+        response.raise_for_status()  # This will raise an HTTPError for bad responses
 
         job_data = response.json()
         job_title = job_data.get("title")
