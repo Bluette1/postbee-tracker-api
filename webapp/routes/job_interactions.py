@@ -6,6 +6,7 @@ from flask import Blueprint, current_app, jsonify, request
 
 from webapp.config import get_config
 from webapp.models.job_interaction import JobInteraction
+from webapp.producer import publish_job_application
 from webapp.tasks.jobs import send_followup_notification
 from webapp.utils.auth import token_required
 
@@ -112,6 +113,10 @@ def create_follow_up(job_id: str) -> tuple:
     else:
         logger.warning("The follow-up date is in the past. Email will not be sent.")
 
+    if data["status"] == "applied":
+
+        publish_job_application(job_id, user_id)
+        logger.info(f"Sent job application message for job ID: {data['jobId']}.")
     return jsonify(data), 200
 
 
@@ -164,6 +169,9 @@ def update_follow_up(job_id: str) -> tuple:
     else:
         logger.warning("The follow-up date is in the past. Email will not be sent.")
 
+    if data["status"] == "applied":
+        publish_job_application(job_id, user_id)
+        logger.info(f"Sent job application message for job ID: {data['jobId']}.")
     return jsonify(data), 200
 
 
