@@ -45,7 +45,11 @@ class JobInteractionsTestCase(unittest.TestCase):
             status_code=200, json=lambda: {"user_email": "test@example.com"}
         )
 
-        data = {"followUpDate": "2025-01-21T10:00:00Z", "jobId": "job_id"}
+        data = {
+            "followUpDate": "2025-01-21T10:00:00Z",
+            "jobId": "job_id",
+            "status": "applied",
+        }
 
         response = self.client.post(
             "/api/jobs/job_id/follow-ups",
@@ -97,7 +101,11 @@ class JobInteractionsTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             json.loads(response.data),
-            {"followUpDate": "2025-01-21T10:00:00Z", "jobId": "job_id"},
+            {
+                "followUpDate": "2025-01-21T10:00:00Z",
+                "jobId": "job_id",
+                "status": "applied",
+            },
         )
 
     @patch("webapp.utils.auth.validate_token")  # Mock validate_token
